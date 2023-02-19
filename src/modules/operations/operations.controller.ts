@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, NotFoundException } from '@nestjs/common';
 import { OperationsService } from './operations.service';
 
 @Controller('operations')
@@ -7,6 +7,7 @@ export class OperationsController {
 
   @Get()
   getOperations() {
+    throw new NotFoundException('Not found')
     return this.operationsService.getOperations();
   }
 }
