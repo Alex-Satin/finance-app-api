@@ -33,18 +33,20 @@ export class OperationsService {
   }
 
   updateOperation(id: string, dto: UpdateOperationDto) {
-    let operation = this.operations.find((operation) => operation.id === id);
+    const operationIndex = this.operations.findIndex(
+      (operation) => operation.id === id,
+    );
 
-    if (!operation) {
+    if (operationIndex === -1) {
       throw new NotFoundException(`Can't find operation with id ${id}`);
     }
 
-    operation = {
-      ...operation,
+    this.operations[operationIndex] = {
+      ...this.operations[operationIndex],
       ...dto,
     };
 
-    return operation;
+    return this.operations[operationIndex];
   }
 
   deleteOperation(id: string) {

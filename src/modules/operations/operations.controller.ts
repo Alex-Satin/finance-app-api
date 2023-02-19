@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Param, 
-  ParseUUIDPipe, 
-  Post, 
-  Body, 
-  Put, 
-  Delete
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Body,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import { CreateOperationDto, UpdateOperationDto } from 'src/common';
 import { OperationsService } from './operations.service';
@@ -32,9 +32,9 @@ export class OperationsController {
 
   @Put(':id')
   updateOperation(
-    @Param('id', new ParseUUIDPipe()) id: string, 
-    @Body() dto: UpdateOperationDto
-  )  {
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateOperationDto,
+  ) {
     return this.operationsService.updateOperation(id, dto);
   }
 
