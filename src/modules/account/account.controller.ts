@@ -21,17 +21,17 @@ export class AccountController {
   }
 
   @Get(':id')
-  getOperation(@Param('id', new ParseUUIDPipe()) id: string) {
+  getAccount(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.accountService.getAccount(id);
   }
 
   @Post()
-  createOperation(@Body() dto: CreateAccountDto) {
+  createAccount(@Body() dto: CreateAccountDto) {
     return this.accountService.createAccount(dto);
   }
 
   @Put(':id')
-  updateOperation(
+  updateAccount(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateAccountDto,
   ) {
@@ -39,7 +39,7 @@ export class AccountController {
   }
 
   @Delete(':id')
-  deleteOperation(@Param('id', new ParseUUIDPipe()) id: string) {
+  deleteAccount(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.accountService.deleteAccount(id);
   }
 }
