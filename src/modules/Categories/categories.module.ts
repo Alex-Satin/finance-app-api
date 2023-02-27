@@ -6,4 +6,4 @@ import { CategoriesController } from './categories.controller';
   providers: [CategoriesService],
   controllers: [CategoriesController],
 })
-export class UsersModule {}
+export class CategoriesModule {}

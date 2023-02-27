@@ -5,8 +5,5 @@ export class CreateUserDto {
   name: string;
 
   @IsString()
-  currency: string;
-
-  @IsUUID()
-  userId: string;
+  email: string;
 }

@@ -22,7 +22,7 @@ export class CategoriesService {
         ...dto,
         createdAt: new Date(),
         id: uuid(),
-        category: ''
+        imageUrl: ''
     };
     this.categories.push(categories);
     return this.categories;

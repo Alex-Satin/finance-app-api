@@ -7,5 +7,5 @@ export class UpdateCategoryDto {
 
   @IsString()
   @IsOptional()
-  currency: string;
+  imageUrl: string;
 }

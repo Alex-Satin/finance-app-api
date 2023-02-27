@@ -5,8 +5,5 @@ export class CreateCategoryDto {
   name: string;
 
   @IsString()
-  currency: string;
-
-  @IsUUID()
-  userId: string;
+  imageUrl: string;
 }
