@@ -22,16 +22,14 @@ export class UsersService {
       ...dto,
       createdAt: new Date(),
       id: uuid(),
-      gmail: ''
+      email: '',
     };
     this.users.push(user);
     return user;
   }
 
   updateUser(id: string, dto: UpdateUserDto) {
-    const userIndex = this.users.findIndex(
-      (user) => user.id === id,
-    );
+    const userIndex = this.users.findIndex((user) => user.id === id);
 
     if (userIndex === -1) {
       throw new NotFoundException(`Can't find operation with id ${id}`);
@@ -45,9 +43,7 @@ export class UsersService {
   }
 
   deleteUser(id: string) {
-    this.users = this.users.filter(
-      (user) => user.id !== id,
-    );
+    this.users = this.users.filter((user) => user.id !== id);
     return id;
   }
 }

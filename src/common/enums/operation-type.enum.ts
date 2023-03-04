@@ -1,4 +1,4 @@
 export enum OperationType {
-  INCOME = 'income',
-  OUTGO = 'outgo',
+  INCOME = 'INCOME',
+  OUTGO = 'OUTGO',
 }
