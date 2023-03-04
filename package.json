@@ -25,6 +25,7 @@
     "typeorm:mi:down": "npm run typeorm -- -d ./src/providers/database/postgres/ormconfig.ts migration:revert"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
