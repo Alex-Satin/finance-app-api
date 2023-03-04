@@ -24,10 +24,10 @@ export class Operation {
   currency: string;
 
   @Column({ type: 'enum', enum: OperationType })
-  operationType: string;
+  operationType: OperationType;
 
-  @Column({ type: 'simple-json', nullable: true })
-  notes?: { [key: string]: any };
+  @Column({ nullable: true })
+  notes?: string;
 
   @ManyToOne(() => Account, (account) => account.id)
   account: Account;

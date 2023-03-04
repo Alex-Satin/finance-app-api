@@ -15,8 +15,11 @@ export class User {
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.UNVERIFIED })
   status: UserStatus;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
+
+  @Column()
+  hashedPassword: string;
 
   @Column()
   phone: string;
