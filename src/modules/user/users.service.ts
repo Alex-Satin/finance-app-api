@@ -22,7 +22,7 @@ export class UsersService {
       ...dto,
       createdAt: new Date(),
       id: uuid(),
-      gmail: ''
+      email: ''
     };
     this.users.push(user);
     return user;
