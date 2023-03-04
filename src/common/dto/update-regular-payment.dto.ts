@@ -10,7 +10,7 @@ export class UpdateRegularPaymentDto {
 
   @IsEnum(RegularPaymentInterval)
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({enum: RegularPaymentInterval})
   interval: RegularPaymentInterval;
 
   @IsNumber()

@@ -8,7 +8,7 @@ export class CreateOperationDto {
   amount: number;
 
   @IsEnum(OperationType)
-  @ApiProperty()
+  @ApiProperty({enum: OperationType})
   type: OperationType;
 
   @IsString()
