@@ -8,7 +8,7 @@ export class CreateRegularPaymentDto {
   name: string;
 
   @IsEnum(RegularPaymentInterval)
-  @ApiProperty()
+  @ApiProperty({enum:RegularPaymentInterval})
   interval: RegularPaymentInterval;
 
   @IsNumber()
