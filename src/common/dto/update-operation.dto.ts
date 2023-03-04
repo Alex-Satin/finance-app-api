@@ -1,19 +1,19 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateOperationDto {
   @IsNumber()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   amount?: number;
 
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   category?: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   notes?: string;
 }

@@ -1,25 +1,25 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { RegularPaymentInterval } from '../enums';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateRegularPaymentDto {
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   name: string;
 
   @IsEnum(RegularPaymentInterval)
   @IsOptional()
-  @ApiProperty({enum: RegularPaymentInterval})
+  @ApiPropertyOptional({enum: RegularPaymentInterval})
   interval: RegularPaymentInterval;
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   amount: number;
 
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   currency: string;
 }

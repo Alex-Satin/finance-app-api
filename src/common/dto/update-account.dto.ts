@@ -1,14 +1,14 @@
 import { IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateAccountDto {
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   name: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiPropertyOptional()
   currency: string;
 }
