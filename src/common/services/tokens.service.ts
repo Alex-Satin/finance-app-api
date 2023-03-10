@@ -16,13 +16,13 @@ export class TokensService {
 
   generateAccessToken(user: User) {
     const payload = { sub: user.id, email: user.email };
-    const options: JwtSignOptions = { expiresIn: '15m' };
+    const options: JwtSignOptions = { expiresIn: '1d' };
     return this.jwtService.sign(payload, options);
   }
 
   generateRefreshToken(user: User) {
     const payload = { sub: user.id };
-    const options = { expiresIn: '7d' };
+    const options = { expiresIn: '30d' };
     return this.jwtService.sign(payload, options);
   }
 

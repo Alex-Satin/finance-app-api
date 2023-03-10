@@ -7,16 +7,26 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateAccountDto, UpdateAccountDto } from 'src/common';
+
+import {
+  CreateAccountDto,
+  GetUser,
+  JwtAuthGuard,
+  UpdateAccountDto,
+} from 'src/common';
+import { User } from 'src/providers/database';
 import { AccountService } from './account.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @Get()
-  getAccounts() {
+  getAccounts(@GetUser() user: User) {
+    console.log(JSON.stringify(user));
     return this.accountService.getAccounts();
   }
 
