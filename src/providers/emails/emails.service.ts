@@ -20,6 +20,8 @@ export class EmailsService {
         subject: dto.subject,
         text: dto.text,
       });
+
+      this.logger.log(`Email to ${dto.to} has been successfully sended`);
     } catch (err) {
       this.logger.error(err, '', `EmailsService::sendEmail`);
     }
