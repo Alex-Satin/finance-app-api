@@ -13,7 +13,7 @@ import { Cache } from 'cache-manager';
 
 import { User } from 'src/providers/database';
 import { EmailsService } from 'src/providers/emails';
-import { SignUpDto, SignUpVerifyDto } from 'src/common';
+import { SignUpDto, SignUpVerifyDto, UserStatus } from 'src/common';
 import { TokensService } from 'src/common/services';
 
 const REGISTER_CACHE_PREFIX = 'register-otp';
@@ -67,6 +67,10 @@ export class SignUpService {
     }
 
     const user = await this.userRespository.findOneBy({ email: dto.email });
+
+    user.status = UserStatus.ACTIVE;
+
+    await this.userRespository.save(user);
 
     await this.cache.del(`${REGISTER_CACHE_PREFIX}:${dto.email}`);
 
