@@ -19,10 +19,10 @@ export class CategoriesService {
 
   createCategory(dto: CreateCategoryDto) {
     const categories: Category = {
-        ...dto,
-        createdAt: new Date(),
-        id: uuid(),
-        imageUrl: ''
+      ...dto,
+      createdAt: new Date(),
+      id: uuid(),
+      imageUrl: '',
     };
     this.categories.push(categories);
     return this.categories;
@@ -45,9 +45,7 @@ export class CategoriesService {
   }
 
   deleteCategory(id: string) {
-    this.categories = this.categories.filter(
-      (user) => user.id !== id,
-    );
+    this.categories = this.categories.filter((user) => user.id !== id);
     return id;
   }
 }
