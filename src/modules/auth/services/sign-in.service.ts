@@ -13,7 +13,7 @@ import { Cache } from 'cache-manager';
 
 import { User } from 'src/providers/database';
 import { EmailsService } from 'src/providers/emails';
-import { SignInDto, SignInVerifyDto } from 'src/common';
+import { RefreshTokenDto, SignInDto, SignInVerifyDto } from 'src/common';
 import { TokensService } from 'src/common/services';
 
 const SIGN_IN_CACHE_PREFIX = 'sign-in-otp';
@@ -73,6 +73,10 @@ export class SignInService {
       accessToken: this.tokensService.generateAccessToken(user),
       refreshToken: this.tokensService.generateRefreshToken(user),
     };
+  }
+
+  async refreshToken(dto: RefreshTokenDto) {
+    return this.tokensService.refreshTokens(dto.refreshToken);
   }
 
   private async startVerification(email: string) {

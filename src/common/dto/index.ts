@@ -12,3 +12,4 @@ export * from './sign-up.dto';
 export * from './sign-up-verify.dto';
 export * from './sign-in.dto';
 export * from './sign-in-verify.dto';
+export * from './refresh-token.dto';
