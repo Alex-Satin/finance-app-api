@@ -9,6 +9,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import {
   CreateAccountDto,
@@ -19,6 +20,7 @@ import {
 import { User } from 'src/providers/database';
 import { AccountService } from './account.service';
 
+@ApiTags('Acounts')
 @UseGuards(JwtAuthGuard)
 @Controller('account')
 export class AccountController {

@@ -8,9 +8,11 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateOperationDto, UpdateOperationDto } from 'src/common';
 import { OperationsService } from './operations.service';
 
+@ApiTags('Operations')
 @Controller('operations')
 export class OperationsController {
   constructor(private readonly operationsService: OperationsService) {}

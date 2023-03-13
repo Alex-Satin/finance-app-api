@@ -8,9 +8,11 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateRegularPaymentDto, UpdateRegularPaymentDto } from 'src/common';
 import { RegularPaymentService } from './regular-payment.service';
 
+@ApiTags('Regular payments')
 @Controller('regular-payment')
 export class RegularPaymentController {
   constructor(private readonly regularPaymentService: RegularPaymentService) {}
