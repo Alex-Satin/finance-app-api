@@ -6,7 +6,9 @@ import { PassportModule } from '@nestjs/passport';
 import { TokensService } from 'src/common/services';
 import { PostgresDatabaseProviderModule } from 'src/providers/database';
 import { EmailsProviderModule } from 'src/providers/emails';
+import { SignInController } from './controllers/sign-in.controller';
 import { SignUpController } from './controllers/sign-up.controller';
+import { SignInService } from './services/sign-in.service';
 import { SignUpService } from './services/sign-up.service';
 import { JwtStrategy } from './strategies';
 
@@ -25,7 +27,7 @@ import { JwtStrategy } from './strategies';
       defaultStrategy: 'jwt',
     }),
   ],
-  controllers: [SignUpController],
-  providers: [SignUpService, TokensService, JwtStrategy],
+  controllers: [SignUpController, SignInController],
+  providers: [SignUpService, TokensService, JwtStrategy, SignInService],
 })
 export class AuthModule {}
