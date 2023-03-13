@@ -24,7 +24,7 @@ export class SignUpService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRespository: Repository<User>,
+    private readonly userRepository: Repository<User>,
 
     @Inject(CACHE_MANAGER)
     private readonly cache: Cache,
@@ -34,13 +34,13 @@ export class SignUpService {
   ) {}
 
   async signUp(dto: SignUpDto) {
-    const existing = await this.userRespository.findOneBy({ email: dto.email });
+    const existing = await this.userRepository.findOneBy({ email: dto.email });
 
     if (existing) {
       throw new BadRequestException('User is already exists');
     }
 
-    const user = this.userRespository.create();
+    const user = this.userRepository.create();
 
     user.email = dto.email;
     user.phone = dto.phone;
@@ -48,7 +48,7 @@ export class SignUpService {
 
     user.hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    await this.userRespository.save(user);
+    await this.userRepository.save(user);
 
     await this.startVerification(dto.email);
 
@@ -66,11 +66,11 @@ export class SignUpService {
       throw new BadRequestException('Code invalid or expired');
     }
 
-    const user = await this.userRespository.findOneBy({ email: dto.email });
+    const user = await this.userRepository.findOneBy({ email: dto.email });
 
     user.status = UserStatus.ACTIVE;
 
-    await this.userRespository.save(user);
+    await this.userRepository.save(user);
 
     await this.cache.del(`${REGISTER_CACHE_PREFIX}:${dto.email}`);
 
