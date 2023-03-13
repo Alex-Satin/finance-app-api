@@ -16,7 +16,7 @@ import {
   import { SignInDto, SignInVerifyDto, UserStatus } from 'src/common';
   import { TokensService } from 'src/common/services';
   
-  const REGISTER_IN_CACHE_PREFIX = 'register-otp';
+  const SIGN_IN_CACHE_PREFIX = 'sign-in-otp';
   
   @Injectable()
   export class SignInService {
@@ -24,7 +24,7 @@ import {
   
     constructor(
       @InjectRepository(User)
-      private readonly userRespository: Repository<User>,
+      private readonly userRepository: Repository<User>,
   
       @Inject(CACHE_MANAGER)
       private readonly cache: Cache,
@@ -34,10 +34,10 @@ import {
     ) {}
   
     async signIn(dto: SignInDto) {
-      const existing = await this.userRespository.findOneBy({ email: dto.email });
+      const existing = await this.userRepository.findOneBy({ email: dto.email });
   
       if (!existing) {
-        throw new BadRequestException('User is already exists');
+        throw new BadRequestException('User does not exist');
       }
   
       await this.startVerification(dto.email);
@@ -49,20 +49,18 @@ import {
   
     async verify(dto: SignInVerifyDto) {
       const codeFromCache = await this.cache.get(
-        `${REGISTER_IN_CACHE_PREFIX}:${dto.email}`,
+        `${SIGN_IN_CACHE_PREFIX}:${dto.email}`,
       );
   
       if (codeFromCache !== dto.otpCode) {
         throw new BadRequestException('Code invalid or expired');
       }
   
-      const user = await this.userRespository.findOneBy({ email: dto.email });
+      const user = await this.userRepository.findOneBy({ email: dto.email });
   
-      user.status = UserStatus.ACTIVE;
+      await this.userRepository.save(user);
   
-      await this.userRespository.save(user);
-  
-      await this.cache.del(`${REGISTER_IN_CACHE_PREFIX}:${dto.email}`);
+      await this.cache.del(`${SIGN_IN_CACHE_PREFIX}:${dto.email}`);
   
       return {
         accessToken: this.tokensService.generateAccessToken(user),
@@ -77,7 +75,7 @@ import {
       });
   
       await this.cache.set(
-        `${REGISTER_IN_CACHE_PREFIX}:${email}`,
+        `${SIGN_IN_CACHE_PREFIX}:${email}`,
         otpCode,
         60 * 3 * 1000,
       );
