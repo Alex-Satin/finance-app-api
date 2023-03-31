@@ -28,30 +28,36 @@ export class AccountController {
 
   @Get()
   getAccounts(@GetUser() user: User) {
-    console.log(JSON.stringify(user));
-    return this.accountService.getAccounts();
+    return this.accountService.getAccounts(user);
   }
 
   @Get(':id')
-  getAccount(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.accountService.getAccount(id);
+  getAccount(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @GetUser() user: User,
+  ) {
+    return this.accountService.getAccount(id, user);
   }
 
   @Post()
-  createAccount(@Body() dto: CreateAccountDto) {
-    return this.accountService.createAccount(dto);
+  createAccount(@Body() dto: CreateAccountDto, @GetUser() user: User) {
+    return this.accountService.createAccount(dto, user);
   }
 
   @Put(':id')
   updateAccount(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateAccountDto,
+    @GetUser() user: User,
   ) {
-    return this.accountService.updateAccount(id, dto);
+    return this.accountService.updateAccount(id, dto, user);
   }
 
   @Delete(':id')
-  deleteAccount(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.accountService.deleteAccount(id);
+  deleteAccount(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @GetUser() user: User,
+  ) {
+    return this.accountService.deleteAccount(id, user);
   }
 }

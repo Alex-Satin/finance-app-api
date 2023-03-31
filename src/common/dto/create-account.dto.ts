@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAccountDto {
@@ -9,8 +9,4 @@ export class CreateAccountDto {
   @IsString()
   @ApiProperty()
   currency: string;
-
-  @IsUUID()
-  @ApiProperty()
-  userId: string;
 }

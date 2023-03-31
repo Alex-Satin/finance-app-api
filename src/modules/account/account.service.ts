@@ -1,17 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { Account, CreateAccountDto, UpdateAccountDto } from 'src/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { CreateAccountDto, UpdateAccountDto } from 'src/common';
+import { Account, User } from 'src/providers/database';
 
 @Injectable()
 export class AccountService {
-  private accounts: Account[] = [];
+  constructor(
+    @InjectRepository(Account)
+    private readonly accountRepository: Repository<Account>,
+  ) {}
 
-  getAccounts() {
-    return this.accounts;
+  getAccounts(user: User): Promise<Account[]> {
+    return this.accountRepository.findBy({
+      user: { id: user.id },
+    });
   }
 
-  getAccount(id: string) {
-    const account = this.accounts.find((account) => account.id === id);
+  async getAccount(id: string, user: User): Promise<Account> {
+    const account = await this.accountRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
 
     if (!account) {
       throw new NotFoundException(`Can't find account with id ${id}`);
@@ -20,37 +35,45 @@ export class AccountService {
     return account;
   }
 
-  createAccount(dto: CreateAccountDto) {
-    const account: Account = {
-      ...dto,
-      createdAt: new Date(),
-      id: uuid(),
-    };
+  async createAccount(dto: CreateAccountDto, user: User): Promise<Account> {
+    const account = this.accountRepository.create({
+      name: dto.name,
+      currency: dto.currency,
+      user,
+    });
 
-    this.accounts.push(account);
+    try {
+      await this.accountRepository.save(account);
+    } catch (err) {
+      throw new BadRequestException('Ivalid account configuration');
+    }
 
     return account;
   }
 
-  updateAccount(id: string, dto: UpdateAccountDto) {
-    const accountIndex = this.accounts.findIndex(
-      (account) => account.id === id,
-    );
+  async updateAccount(
+    id: string,
+    dto: UpdateAccountDto,
+    user: User,
+  ): Promise<Account> {
+    const account = await this.accountRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
 
-    if (accountIndex === -1) {
+    if (!account) {
       throw new NotFoundException(`Can't find account with id ${id}`);
     }
 
-    this.accounts[accountIndex] = {
-      ...this.accounts[accountIndex],
-      ...dto,
-    };
+    const updatedAccount = await this.accountRepository.save(
+      this.accountRepository.merge(account, dto),
+    );
 
-    return this.accounts[accountIndex];
+    return updatedAccount;
   }
 
-  deleteAccount(id: string) {
-    this.accounts = this.accounts.filter((account) => account.id !== id);
+  async deleteAccount(id: string, user: User) {
+    await this.accountRepository.delete({ id, user: { id: user.id } });
 
     return id;
   }
