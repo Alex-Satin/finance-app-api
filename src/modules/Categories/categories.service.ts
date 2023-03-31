@@ -1,51 +1,76 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { CreateCategoryDto, UpdateCategoryDto, Category } from 'src/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { CreateCategoryDto, UpdateCategoryDto } from 'src/common';
+import { Category, User } from 'src/providers/database';
 
 @Injectable()
 export class CategoriesService {
-  private categories: Category[] = [];
-  getCategories() {
-    return this.categories;
+  constructor(
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+  ) {}
+
+  getCategories(user: User): Promise<Category[]> {
+    return this.categoryRepository.findBy({
+      user: { id: user.id },
+    });
   }
 
-  getCategory(id: string) {
-    const category = this.categories.find((category) => category.id === id);
+  async getCategory(id: string, user: User): Promise<Category> {
+    const category = await this.categoryRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
+
     if (!category) {
-      throw new NotFoundException(`Can't find operation with id ${id}`);
+      throw new NotFoundException(`Can't find category with id ${id}`);
     }
+
     return category;
   }
 
-  createCategory(dto: CreateCategoryDto) {
-    const categories: Category = {
-      ...dto,
-      createdAt: new Date(),
-      id: uuid(),
-      imageUrl: '',
-    };
-    this.categories.push(categories);
-    return this.categories;
-  }
+  async createCategory(dto: CreateCategoryDto, user: User) {
+    const category = this.categoryRepository.create({
+      name: dto.name,
+      imagePath: dto.imageUrl,
+      user,
+    });
 
-  updateCategory(id: string, dto: UpdateCategoryDto) {
-    const categoryIndex = this.categories.findIndex(
-      (categories) => categories.id === id,
-    );
-
-    if (categoryIndex === -1) {
-      throw new NotFoundException(`Can't find operation with id ${id}`);
+    try {
+      await this.categoryRepository.save(category);
+    } catch (err) {
+      throw new BadRequestException('Ivalid category configuration');
     }
 
-    this.categories[categoryIndex] = {
-      ...this.categories[categoryIndex],
-      ...dto,
-    };
-    return this.categories[categoryIndex];
+    return category;
   }
 
-  deleteCategory(id: string) {
-    this.categories = this.categories.filter((user) => user.id !== id);
+  async updateCategory(id: string, dto: UpdateCategoryDto, user: User) {
+    const category = await this.categoryRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Can't find category with id ${id}`);
+    }
+
+    const updatedCategory = await this.categoryRepository.save(
+      this.categoryRepository.merge(category, dto),
+    );
+
+    return updatedCategory;
+  }
+
+  async deleteCategory(id: string, user: User) {
+    await this.categoryRepository.delete({ id, user: { id: user.id } });
+
     return id;
   }
 }
