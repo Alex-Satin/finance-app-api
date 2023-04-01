@@ -1,4 +1,10 @@
-import { IsNumber, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsNumber,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { OperationType } from '../enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -8,12 +14,20 @@ export class CreateOperationDto {
   amount: number;
 
   @IsEnum(OperationType)
-  @ApiProperty({enum: OperationType})
+  @ApiProperty({ enum: OperationType })
   type: OperationType;
+
+  @IsUUID()
+  @ApiProperty()
+  categoryId: string;
+
+  @IsUUID()
+  @ApiProperty()
+  accountId: string;
 
   @IsString()
   @ApiProperty()
-  category: string;
+  currencyCode: string;
 
   @IsString()
   @IsOptional()

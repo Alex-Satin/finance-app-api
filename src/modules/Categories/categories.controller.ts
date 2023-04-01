@@ -7,14 +7,21 @@ import {
   Body,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CreateCategoryDto, GetUser, UpdateCategoryDto } from 'src/common';
+import {
+  CreateCategoryDto,
+  GetUser,
+  JwtAuthGuard,
+  UpdateCategoryDto,
+} from 'src/common';
 import { CategoriesService } from './categories.service';
 import { User } from 'src/providers/database';
 
 @ApiTags('Categories')
+@UseGuards(JwtAuthGuard)
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}

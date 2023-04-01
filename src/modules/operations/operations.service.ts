@@ -1,17 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { CreateOperationDto, Operation, UpdateOperationDto } from 'src/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { CreateOperationDto, UpdateOperationDto } from 'src/common';
+import { Operation, User } from 'src/providers/database';
 
 @Injectable()
 export class OperationsService {
-  private operations: Operation[] = [];
+  constructor(
+    @InjectRepository(Operation)
+    private readonly operationRepository: Repository<Operation>,
+  ) {}
 
-  getOperations() {
-    return this.operations;
+  getOperations(user: User): Promise<Operation[]> {
+    return this.operationRepository.findBy({
+      user: { id: user.id },
+    });
   }
 
-  getOperation(id: string) {
-    const operation = this.operations.find((operation) => operation.id === id);
+  async getOperation(id: string, user: User): Promise<Operation> {
+    const operation = await this.operationRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
 
     if (!operation) {
       throw new NotFoundException(`Can't find operation with id ${id}`);
@@ -20,39 +35,52 @@ export class OperationsService {
     return operation;
   }
 
-  createOperation(dto: CreateOperationDto) {
-    const operation: Operation = {
-      ...dto,
-      createdAt: new Date(),
-      id: uuid(),
-    };
+  async createOperation(
+    dto: CreateOperationDto,
+    user: User,
+  ): Promise<Operation> {
+    const operation = this.operationRepository.create({
+      amount: dto.amount,
+      operationType: dto.type,
+      notes: dto.notes,
+      currency: dto.currencyCode,
+      account: { id: dto.accountId },
+      category: { id: dto.categoryId },
+      user,
+    });
 
-    this.operations.push(operation);
+    try {
+      await this.operationRepository.save(operation);
+    } catch (err) {
+      throw new BadRequestException('Ivalid operation configuration');
+    }
 
     return operation;
   }
 
-  updateOperation(id: string, dto: UpdateOperationDto) {
-    const operationIndex = this.operations.findIndex(
-      (operation) => operation.id === id,
-    );
+  async updateOperation(
+    id: string,
+    dto: UpdateOperationDto,
+    user: User,
+  ): Promise<Operation> {
+    const operation = await this.operationRepository.findOneBy({
+      id,
+      user: { id: user.id },
+    });
 
-    if (operationIndex === -1) {
+    if (!operation) {
       throw new NotFoundException(`Can't find operation with id ${id}`);
     }
 
-    this.operations[operationIndex] = {
-      ...this.operations[operationIndex],
-      ...dto,
-    };
+    const updatedOperation = await this.operationRepository.save(
+      this.operationRepository.merge(operation, dto),
+    );
 
-    return this.operations[operationIndex];
+    return updatedOperation;
   }
 
-  deleteOperation(id: string) {
-    this.operations = this.operations.filter(
-      (operation) => operation.id !== id,
-    );
+  async deleteOperation(id: string, user: User): Promise<string> {
+    await this.operationRepository.delete({ id, user: { id: user.id } });
 
     return id;
   }
