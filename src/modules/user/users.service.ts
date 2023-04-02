@@ -1,49 +1,40 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { CreateUserDto, User, UpdateUserDto } from 'src/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/providers/database';
+import { Repository } from 'typeorm';
+import { GoogleDriveService } from 'src/providers/google-drive';
+import { GoogleDriveFolders } from 'src/common';
+
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
-  getUsers() {
-    return this.users;
-  }
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly googleDriveService: GoogleDriveService,
+  ) {}
 
-  getUser(id: string) {
-    const user = this.users.find((user) => user.id === id);
-    if (!user) {
-      throw new NotFoundException(`Can't find operation with id ${id}`);
-    }
-    return user;
-  }
+  async setProfileImage(file: Express.Multer.File, user: User) {
+     let fileId: string;
 
-  createUser(dto: CreateUserDto) {
-    const user: User = {
-      ...dto,
-      createdAt: new Date(),
-      id: uuid(),
-      email: '',
-    };
-    this.users.push(user);
-    return user;
-  }
-
-  updateUser(id: string, dto: UpdateUserDto) {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-
-    if (userIndex === -1) {
-      throw new NotFoundException(`Can't find operation with id ${id}`);
+    if (user.profileImageId) {
+      fileId = await this.googleDriveService.updateFile(
+        file,
+        user.profileImageId,
+      );
+    } else {
+      fileId = await this.googleDriveService.uploadFile(
+        file,
+        `${user.id}.jpg`,
+        GoogleDriveFolders.AVATARS,
+      );
     }
 
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...dto,
-    };
-    return this.users[userIndex];
+    user.profileImageId = fileId;
+
+    await this.userRepository.save(user);
   }
 
-  deleteUser(id: string) {
-    this.users = this.users.filter((user) => user.id !== id);
-    return id;
-  }
-}
+}  
+  
+
