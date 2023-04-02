@@ -27,9 +27,13 @@ export class User {
   @Column()
   companyName: string;
 
+  @Column()
+  profileImageId: string;
+
   @UpdateDateColumn()
   updatedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
+
 }
