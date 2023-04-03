@@ -7,6 +7,9 @@ import {
   Get,
   Patch,
   Body,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -29,7 +32,15 @@ export class UsersController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5242880 }),
+          new FileTypeValidator({ fileType: 'image/jpeg' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
     @GetUser() user: User,
   ) {
     return this.usersService.setProfileImage(file, user);
