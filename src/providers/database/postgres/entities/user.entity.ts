@@ -27,7 +27,7 @@ export class User {
   @Column()
   companyName: string;
 
-  @Column()
+  @Column({ nullable: true })
   profileImageId: string;
 
   @UpdateDateColumn()
