@@ -1,16 +1,11 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
 
-import {
-  databaseConfig,
-  emailsConfig,
-  googleDriveConfig,
-  jwtConfig,
-} from './config';
+import { databaseConfig, emailsConfig, jwtConfig } from './config';
 import { PostgresDatabaseProviderModule } from './providers/database';
 import { EmailsProviderModule } from './providers/emails';
-import { GoogleDriveProviderModule } from './providers/google-drive';
 import { SERVICES } from './common/services';
 
 import { AccountModule } from './modules/account/account.module';
@@ -24,11 +19,10 @@ import { UsersModule } from './modules/user/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, emailsConfig, jwtConfig, googleDriveConfig],
+      load: [databaseConfig, emailsConfig, jwtConfig],
     }),
     PostgresDatabaseProviderModule,
     EmailsProviderModule,
-    GoogleDriveProviderModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -39,6 +33,7 @@ import { UsersModule } from './modules/user/users.module';
     CacheModule.register({
       isGlobal: true,
     }),
+    HttpModule,
 
     OperationsModule,
     AccountModule,
