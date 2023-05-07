@@ -12,9 +12,9 @@ import * as randomstring from 'randomstring';
 import { Cache } from 'cache-manager';
 
 import { User } from 'src/providers/database';
-import { EmailsService } from 'src/providers/emails';
 import { SignUpDto, SignUpVerifyDto, UserStatus } from 'src/common';
 import { TokensService } from 'src/common/services';
+import { ClientProxy } from '@nestjs/microservices';
 
 const REGISTER_CACHE_PREFIX = 'register-otp';
 
@@ -29,7 +29,9 @@ export class SignUpService {
     @Inject(CACHE_MANAGER)
     private readonly cache: Cache,
 
-    private readonly emailsService: EmailsService,
+    @Inject('EMAILS_SERVICE')
+    private readonly emailsService: ClientProxy,
+
     private readonly tokensService: TokensService,
   ) {}
 
@@ -92,7 +94,7 @@ export class SignUpService {
       60 * 3 * 1000,
     );
 
-    await this.emailsService.sendEmail({
+    this.emailsService.emit('send-email', {
       to: email,
       subject: 'Verify otp',
       text: `Your otp code is: ${otpCode}. Note code is available 3 minutes`,

@@ -3,9 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { HttpModule } from '@nestjs/axios';
 
-import { databaseConfig, emailsConfig, jwtConfig } from './config';
+import { databaseConfig, jwtConfig } from './config';
 import { PostgresDatabaseProviderModule } from './providers/database';
-import { EmailsProviderModule } from './providers/emails';
 import { SERVICES } from './common/services';
 
 import { AccountModule } from './modules/account/account.module';
@@ -19,10 +18,9 @@ import { UsersModule } from './modules/user/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, emailsConfig, jwtConfig],
+      load: [databaseConfig, jwtConfig],
     }),
     PostgresDatabaseProviderModule,
-    EmailsProviderModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
