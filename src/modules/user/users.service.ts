@@ -5,7 +5,6 @@ import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 import * as FormData from 'form-data';
-import { Readable } from 'stream';
 
 import { User } from 'src/providers/database';
 import { GoogleDriveFolders, UpdateUserDto } from 'src/common';
@@ -25,7 +24,7 @@ export class UsersService {
     if (user.profileImageId) {
       const formData = new FormData();
       formData.append('file', file.buffer, {
-        filename: `${user.profileImageId}.jpg`,
+        filename: `${user.id}.jpg`,
       });
       formData.append('googleDriveId', user.profileImageId);
 
@@ -46,9 +45,9 @@ export class UsersService {
     } else {
       const formData = new FormData();
       formData.append('file', file.buffer, {
-        filename: `${user.profileImageId}.jpg`,
+        filename: `${user.id}.jpg`,
       });
-      formData.append('fileName', `${user.profileImageId}.jpg`);
+      formData.append('fileName', `${user.id}.jpg`);
       formData.append('directory', GoogleDriveFolders.AVATARS);
 
       const { data } = await firstValueFrom(
