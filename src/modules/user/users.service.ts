@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
+import * as FormData from 'form-data';
+import { Readable } from 'stream';
 
 import { User } from 'src/providers/database';
 import { GoogleDriveFolders, UpdateUserDto } from 'src/common';
@@ -21,30 +23,43 @@ export class UsersService {
     let fileId: string;
 
     if (user.profileImageId) {
-      // fileId = await this.googleDriveService.updateFile(
-      //   file,
-      //   user.profileImageId,
-      // );
+      const formData = new FormData();
+      formData.append('file', file.buffer, {
+        filename: `${user.profileImageId}.jpg`,
+      });
+      formData.append('googleDriveId', user.profileImageId);
 
       const { data } = await firstValueFrom(
         this.httpService.patch<string>(
-          `${this.configService.get('common.storageServiceUrl')}/files`,
+          `${this.configService.get('STORAGE_SERVICE_URL')}/files`,
+          formData,
           {
-            file,
-            googleDriveId: user.profileImageId,
+            headers: {
+              ...formData.getHeaders(),
+              'Content-Length': formData.getLengthSync(),
+            },
           },
         ),
       );
 
       fileId = data;
     } else {
+      const formData = new FormData();
+      formData.append('file', file.buffer, {
+        filename: `${user.profileImageId}.jpg`,
+      });
+      formData.append('fileName', `${user.profileImageId}.jpg`);
+      formData.append('directory', GoogleDriveFolders.AVATARS);
+
       const { data } = await firstValueFrom(
-        this.httpService.patch<string>(
-          `${this.configService.get('common.storageServiceUrl')}/files`,
+        this.httpService.post<string>(
+          `${this.configService.get('STORAGE_SERVICE_URL')}/files`,
+          formData,
           {
-            file,
-            fileName: `${user.id}.jpg`,
-            directory: GoogleDriveFolders.AVATARS,
+            headers: {
+              ...formData.getHeaders(),
+              'Content-Length': formData.getLengthSync(),
+            },
           },
         ),
       );
@@ -55,6 +70,8 @@ export class UsersService {
     user.profileImageId = fileId;
 
     await this.userRepository.save(user);
+
+    return user;
   }
 
   async updateUser(dto: UpdateUserDto, user: User) {
